@@ -1,15 +1,24 @@
 package com.marchini.paineldetarefas;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class TarefaEntity {
+    @NotBlank(message = "Título é obrigatório")
+    @Size(max = 100)
     private String titulo;
-    private String descricao;
-    private Integer id;
 
-    public TarefaEntity(String titulo, String descricao, Integer id){
+    @NotBlank(message = "Descrição é obrigatória")
+    private String descricao;
+
+    private Integer id;
+    private String status;
+
+    public TarefaEntity(String titulo, String descricao, Integer id) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.id = id;
+        this.status = "PENDENTE";
     }
 
     public String getTitulo() {
@@ -32,4 +41,11 @@ public class TarefaEntity {
         return this.id;
     }
 
-};
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}

@@ -22,12 +22,14 @@ Retorna a lista com todas as tarefas cadastradas.
   {
     "id": 1,
     "titulo": "Estudar Spring Boot",
-    "descricao": "Revisar anotações da aula"
+    "descricao": "Revisar anotações da aula",
+    "status": "PENDENTE"
   },
   {
     "id": 2,
     "titulo": "Fazer exercícios",
-    "descricao": "30 minutos de caminhada"
+    "descricao": "30 minutos de caminhada",
+    "status": "PENDENTE"
   }
 ]
 ```
@@ -55,13 +57,21 @@ Retorna uma única tarefa pelo seu identificador.
 {
   "id": 1,
   "titulo": "Estudar Spring Boot",
-  "descricao": "Revisar anotações da aula"
+  "descricao": "Revisar anotações da aula",
+  "status": "PENDENTE"
 }
 ```
 
-| Código | Descrição                        |
-|--------|----------------------------------|
-| 200    | Tarefa encontrada e retornada    |
+**Exemplo de resposta (404 Not Found):**
+```json
+{
+  "erro": "Tarefa não encontrada"
+}
+```
+
+| Código | Descrição                                 |
+|--------|-------------------------------------------|
+| 200    | Tarefa encontrada e retornada             |
 | 404    | Tarefa não encontrada para o ID informado |
 
 ---
@@ -70,14 +80,14 @@ Retorna uma única tarefa pelo seu identificador.
 
 **POST** `/tarefas`
 
-Adiciona uma nova tarefa. O ID é gerado automaticamente.
+Adiciona uma nova tarefa. O ID é gerado automaticamente e o status inicial é `PENDENTE`.
 
 **Corpo da requisição (JSON):**
 
-| Campo       | Tipo   | Obrigatório | Descrição              |
-|-------------|--------|-------------|------------------------|
-| `titulo`    | String | Sim         | Título da tarefa       |
-| `descricao` | String | Sim         | Descrição da tarefa    |
+| Campo       | Tipo   | Obrigatório | Restrições       | Descrição           |
+|-------------|--------|-------------|------------------|---------------------|
+| `titulo`    | String | Sim         | máx. 100 caracteres | Título da tarefa |
+| `descricao` | String | Sim         | —                | Descrição da tarefa |
 
 **Exemplo de corpo:**
 ```json
@@ -87,39 +97,53 @@ Adiciona uma nova tarefa. O ID é gerado automaticamente.
 }
 ```
 
-**Exemplo de resposta (200 OK):**
+**Exemplo de resposta (201 Created):**
 ```json
 {
   "id": 1,
   "titulo": "Estudar Spring Boot",
-  "descricao": "Revisar anotações da aula"
+  "descricao": "Revisar anotações da aula",
+  "status": "PENDENTE"
 }
 ```
 
-| Código | Descrição                  |
-|--------|----------------------------|
-| 200    | Tarefa criada com sucesso  |
+**Exemplo de resposta (400 Bad Request) — validação:**
+```json
+{
+  "titulo": "Título é obrigatório",
+  "descricao": "Descrição é obrigatória"
+}
+```
+
+| Código | Descrição                                              |
+|--------|--------------------------------------------------------|
+| 201    | Tarefa criada com sucesso                              |
+| 400    | Dados inválidos — corpo contém mapa de erros por campo |
 
 ---
 
 ### 4. Atualizar tarefa existente
 
-**PUT** `/tarefas`
+**PUT** `/tarefas/{id}`
 
-Atualiza o título e a descrição de uma tarefa já existente.
+Atualiza o título e a descrição de uma tarefa já existente. O ID é informado na URL.
+
+**Parâmetros de URL:**
+
+| Parâmetro | Tipo    | Descrição                     |
+|-----------|---------|-------------------------------|
+| `id`      | Integer | ID da tarefa a ser atualizada |
 
 **Corpo da requisição (JSON):**
 
-| Campo       | Tipo    | Obrigatório | Descrição                        |
-|-------------|---------|-------------|----------------------------------|
-| `id`        | Integer | Sim         | ID da tarefa a ser atualizada    |
-| `titulo`    | String  | Sim         | Novo título da tarefa            |
-| `descricao` | String  | Sim         | Nova descrição da tarefa         |
+| Campo       | Tipo   | Obrigatório | Restrições          | Descrição              |
+|-------------|--------|-------------|---------------------|------------------------|
+| `titulo`    | String | Sim         | máx. 100 caracteres | Novo título da tarefa  |
+| `descricao` | String | Sim         | —                   | Nova descrição da tarefa |
 
 **Exemplo de corpo:**
 ```json
 {
-  "id": 1,
   "titulo": "Estudar Spring Boot (atualizado)",
   "descricao": "Revisar capítulo 3 e 4"
 }
@@ -130,14 +154,30 @@ Atualiza o título e a descrição de uma tarefa já existente.
 {
   "id": 1,
   "titulo": "Estudar Spring Boot (atualizado)",
-  "descricao": "Revisar capítulo 3 e 4"
+  "descricao": "Revisar capítulo 3 e 4",
+  "status": "PENDENTE"
 }
 ```
 
-| Código | Descrição                           |
-|--------|-------------------------------------|
-| 200    | Tarefa atualizada com sucesso       |
-| 404    | Tarefa não encontrada para o ID informado |
+**Exemplo de resposta (400 Bad Request) — validação:**
+```json
+{
+  "titulo": "Título é obrigatório"
+}
+```
+
+**Exemplo de resposta (404 Not Found):**
+```json
+{
+  "erro": "Tarefa não encontrada"
+}
+```
+
+| Código | Descrição                                              |
+|--------|--------------------------------------------------------|
+| 200    | Tarefa atualizada com sucesso                          |
+| 400    | Dados inválidos — corpo contém mapa de erros por campo |
+| 404    | Tarefa não encontrada para o ID informado              |
 
 ---
 
@@ -155,9 +195,16 @@ Remove uma tarefa pelo seu identificador.
 
 **Resposta:** sem corpo.
 
-| Código | Descrição                              |
-|--------|----------------------------------------|
-| 204    | Tarefa excluída com sucesso            |
+**Exemplo de resposta (404 Not Found):**
+```json
+{
+  "erro": "Tarefa não encontrada"
+}
+```
+
+| Código | Descrição                                 |
+|--------|-------------------------------------------|
+| 204    | Tarefa excluída com sucesso               |
 | 404    | Tarefa não encontrada para o ID informado |
 
 ---
@@ -169,5 +216,5 @@ Remove uma tarefa pelo seu identificador.
 | GET    | `/tarefas`      | Lista todas as tarefas       |
 | GET    | `/tarefas/{id}` | Busca uma tarefa por ID      |
 | POST   | `/tarefas`      | Cria uma nova tarefa         |
-| PUT    | `/tarefas`      | Atualiza uma tarefa          |
+| PUT    | `/tarefas/{id}` | Atualiza uma tarefa          |
 | DELETE | `/tarefas/{id}` | Remove uma tarefa            |
