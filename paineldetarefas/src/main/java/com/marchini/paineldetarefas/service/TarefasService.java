@@ -1,16 +1,17 @@
-package com.marchini.paineldetarefas;
-import org.springframework.http.HttpStatus;
+package com.marchini.paineldetarefas.service;
+
+import com.marchini.paineldetarefas.exception.TarefaNaoEncontradaException;
+import com.marchini.paineldetarefas.model.TarefaEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 @Service
 public class TarefasService {
-    private HashMap<Integer, TarefaEntity>  listaTarefas = new HashMap<>();
+
+    private final HashMap<Integer, TarefaEntity> listaTarefas = new HashMap<>();
     private Integer contadorId = 1;
 
     public TarefaEntity addTarefa(String titulo, String descricao) {
@@ -27,22 +28,22 @@ public class TarefasService {
     public TarefaEntity obterTarefaPorId(Integer id) {
         TarefaEntity tarefa = this.listaTarefas.get(id);
         if (tarefa == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada");
+            throw new TarefaNaoEncontradaException(id);
         }
         return tarefa;
     }
 
     public void deletarTarefaPorId(Integer id) {
         if (!this.listaTarefas.containsKey(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada");
+            throw new TarefaNaoEncontradaException(id);
         }
         this.listaTarefas.remove(id);
     }
 
     public TarefaEntity atualizarTarefaPorId(Integer id, String titulo, String descricao) {
         TarefaEntity tarefaAtualizada = this.obterTarefaPorId(id);
-        tarefaAtualizada.setDescricao(descricao);
         tarefaAtualizada.setTitulo(titulo);
+        tarefaAtualizada.setDescricao(descricao);
         this.listaTarefas.put(id, tarefaAtualizada);
         return tarefaAtualizada;
     }
